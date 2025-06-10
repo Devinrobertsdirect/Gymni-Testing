@@ -1,0 +1,68 @@
+# Laravel Backend .gitignore
+# ==========================
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Composer
+/vendor/
+composer.phar
+
+# Node modules (if any)
+/node_modules/
+
+# Logs
+*.log
+/storage/logs/*
+!storage/logs/.gitkeep
+
+# Cache
+/storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!storage/framework/views/.gitkeep
+
+# Bootstrap cache
+/bootstrap/cache/*.php
+
+# Application cache
+/storage/app/cache/*
+!storage/app/cache/.gitkeep
+
+# Uploaded files
+/storage/app/public/uploads/*
+!storage/app/public/uploads/.gitkeep
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Error logs
+error_log
+*.log
+
+# Database
+*.sqlite
+*.db
+
+# Backup files
+*.bak
+*.backup
+
+# Frontend files (separate repo)
+/a0-project (2)/ 
+node_modules
