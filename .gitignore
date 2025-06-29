@@ -64,5 +64,4 @@ error_log
 *.backup
 
 # Frontend files (separate repo)
-/a0-project (2)/ 
 node_modules
