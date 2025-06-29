@@ -1,0 +1,28 @@
+[phases.setup]
+nixPkgs = ["php81", "composer", "nodejs", "npm"]
+
+[phases.install]
+cmds = [
+  "composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts",
+  "php artisan key:generate --no-interaction",
+  "php artisan config:cache",
+  "php artisan route:cache",
+  "php artisan view:cache"
+]
+
+[phases.build]
+cmds = [
+  "npm install --production",
+  "npm run production"
+]
+
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
+
+[variables]
+APP_ENV = "production"
+APP_DEBUG = "false"
+LOG_LEVEL = "error"
+CACHE_DRIVER = "file"
+SESSION_DRIVER = "file"
+QUEUE_CONNECTION = "sync" 
