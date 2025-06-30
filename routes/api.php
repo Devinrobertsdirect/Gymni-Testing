@@ -37,6 +37,8 @@ Route::post('subscription_pup_sub_check', [LoginController::class, 'subscription
 Route::post('payinapp_Subscription', [LoginController::class, 'payinappSubscription']);
 Route::get('check-subscription-price', [LoginController::class, 'checksubscriptionprice']);
 
+Route::post('get_fitness', [LoginController::class, 'get_fitness'])->name('get_fitness');
+
 Route::middleware(['bearer.token'])->group(function () {
     Route::post('getall_post', [LoginController::class, 'getall_post'])->name('getall_post');
     Route::post('search_friend', [LoginController::class, 'search_friend'])->name('search_friend');
@@ -81,7 +83,6 @@ Route::middleware(['bearer.token'])->group(function () {
     Route::post('get_user_post_image', [LoginController::class, 'get_user_post_image'])->name('get_user_post_image');
 
     Route::post('pubSubService', [PurchaseSubscription::class, 'pubSubService'])->name('pubSubService');
-    Route::post('get_fitness', [LoginController::class, 'get_fitness'])->name('get_fitness');
 
     Route::post('user_like', [LoginController::class, 'user_like'])->name('user_like');
 
