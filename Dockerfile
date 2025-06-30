@@ -40,8 +40,8 @@ RUN mkdir -p /app/bootstrap/cache \
 # Install dependencies
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
-# Install npm dependencies and build assets
-RUN npm ci && npm run production
+# Install npm dependencies (use install instead of ci to handle version mismatches)
+RUN npm install --production
 
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
