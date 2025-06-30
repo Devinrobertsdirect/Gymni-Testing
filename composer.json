@@ -15,7 +15,6 @@
         "james-heinrich/getid3": "^1.9",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
-        "stripe/stripe-php": "^17.3",
         "twilio/sdk": "^6.44"
     },
     "require-dev": {

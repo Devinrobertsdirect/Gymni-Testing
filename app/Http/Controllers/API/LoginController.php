@@ -76,7 +76,7 @@ use OpenSSLCertificateSigningRequest;
 
 
 
-use Stripe;
+// use Stripe;
 
 
 
@@ -18793,7 +18793,7 @@ class LoginController extends Controller
 
 
 
-    require app_path() . '/Stripe/init.php';
+    // // require app_path() . '/Stripe/init.php';
 
 
 
