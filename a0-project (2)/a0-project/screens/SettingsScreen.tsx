@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -82,8 +82,13 @@ export default function SettingsScreen({ navigation }) {
           
           <SettingItem
             icon={<Ionicons name="document-text-outline" size={24} color="white" />}
-            title="Terms and Policies"
-            onPress={() => {/* Handle terms */}}
+            title="Terms and Conditions"
+            onPress={() => Linking.openURL('https://www.gymnifitness.com/terms-and-conditions')}
+          />
+          <SettingItem
+            icon={<Ionicons name="shield-outline" size={24} color="white" />}
+            title="Privacy Policy"
+            onPress={() => Linking.openURL('https://www.gymnifitness.com/privacy-policy')}
           />
 
           <TouchableOpacity 

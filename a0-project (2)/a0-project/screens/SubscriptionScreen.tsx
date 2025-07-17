@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Modal, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -276,11 +276,11 @@ export default function SubscriptionScreen({ navigation }) {
             </View>
 
             <View style={styles.termsContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.gymnifitness.com/terms-and-conditions')}>
                 <Text style={styles.legalText}>Terms</Text>
               </TouchableOpacity>
               <Text style={styles.legalDivider}>•</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.gymnifitness.com/privacy-policy')}>
                 <Text style={styles.legalText}>Privacy</Text>
               </TouchableOpacity>
             </View>
