@@ -5,12 +5,11 @@ import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import API_CLIENT from '../utils/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useToaster } from 'sonner-native';
+import { toast } from 'sonner-native';
 
-export default function PasswordScreen({ navigation, route }) {
+export default function PasswordScreen({ navigation, route }: any) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = useToaster();
   
   // Password requirements
   const requirements = [
@@ -47,7 +46,7 @@ export default function PasswordScreen({ navigation, route }) {
     }
 
     try {
-      const response = await API_CLIENT.post('login', { email, password });
+      const response: any = await API_CLIENT.post('login', { emailOrPhone: email, password });
       await AsyncStorage.setItem('userToken', response.token); // Assuming backend returns a token in 'token' field
       toast.success('Login successful!');
       navigation.navigate('MainHome');

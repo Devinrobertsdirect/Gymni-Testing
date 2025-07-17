@@ -3,8 +3,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState, useEffect, useRef } from 'react';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
+import API_CLIENT from '../utils/apiClient';
+import { toast } from 'sonner-native';
 
-export default function CreatePasswordScreen({ navigation, route }) {
+export default function CreatePasswordScreen({ navigation, route }: any) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const strengthBarWidth = useRef(new Animated.Value(0)).current;
@@ -16,7 +18,7 @@ export default function CreatePasswordScreen({ navigation, route }) {
     { id: 4, label: 'Contains uppercase letter', regex: /[A-Z]/ },
   ];
 
-  const [meetsRequirements, setMeetsRequirements] = useState(
+  const [meetsRequirements, setMeetsRequirements] = useState<{ [key: number]: boolean }>(
     requirements.reduce((acc, req) => ({ ...acc, [req.id]: false }), {})
   );
 
@@ -133,14 +135,25 @@ export default function CreatePasswordScreen({ navigation, route }) {
             styles.continueButton,
             !allRequirementsMet && styles.buttonDisabled
           ]}
-          disabled={!allRequirementsMet}          onPress={() => {
-            // Here you would typically create the account
-            console.log('Creating account with:', {
-              fullName: route.params?.fullName,
-              email: route.params?.email,
-              password
-            });
-            navigation.navigate('Subscription');
+          disabled={!allRequirementsMet}
+          onPress={async () => {
+            const fullName = route.params?.fullName;
+            const email = route.params?.email;
+            if (!fullName || !email || !password) {
+              toast.error('Please fill all fields');
+              return;
+            }
+            try {
+              const response: any = await API_CLIENT.post('signup', {
+                name: fullName,
+                emailOrPhone: email,
+                password
+              });
+              toast.success('Account created!');
+              navigation.navigate('Subscription', { user_id: response.user_id, email, fullName });
+            } catch (error: any) {
+              toast.error(error.message || 'Sign up failed. Please try again.');
+            }
           }}
         >
           <Text style={styles.continueButtonText}>Create Account</Text>

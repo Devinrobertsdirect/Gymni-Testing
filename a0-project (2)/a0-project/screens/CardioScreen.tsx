@@ -66,7 +66,26 @@ import { useState } from 'react';  // Mock cardio workouts data
   }
 ];
 
-export default function CardioScreen({ navigation, route }) {
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RouteProp } from '@react-navigation/native';
+import HamburgerMenuButton from './HamburgerMenuButton';
+
+type RootStackParamList = {
+  Cardio: undefined | { filters?: any };
+  VideoMode: { workout: any };
+  Filter: { sourceScreen?: string };
+  Fitness: undefined;
+};
+
+type CardioScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Cardio'>;
+type CardioScreenRouteProp = RouteProp<RootStackParamList, 'Cardio'>;
+
+interface CardioScreenProps {
+  navigation: CardioScreenNavigationProp;
+  route: CardioScreenRouteProp;
+}
+
+export default function CardioScreen({ navigation, route }: CardioScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState(null);
   const [activeFilterCount, setActiveFilterCount] = useState(0);
@@ -168,12 +187,10 @@ export default function CardioScreen({ navigation, route }) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.navigate('Fitness')}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 8}}>
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>Cardio</Text>
           <View style={{ width: 24 }} />
         </View>
@@ -199,41 +216,18 @@ export default function CardioScreen({ navigation, route }) {
 
         {/* Workout List */}
         <ScrollView style={styles.workoutList}>
-          {filteredWorkouts.map(workout => (
-            <View key={workout.id} style={styles.workoutCard}>
+          {filteredWorkouts.map((workout) => (
+            <TouchableOpacity
+              key={workout.id}
+              style={styles.workoutCard}
+              onPress={() => navigation.navigate('VideoMode', { workout })}
+            >
               <Image source={{ uri: workout.image }} style={styles.workoutImage} />
-              <View style={styles.workoutDetails}>
-                <View style={styles.workoutHeader}>
-                  <Text style={styles.workoutTitle}>{workout.title}</Text>
-                  <TouchableOpacity
-                    onPress={() => toggleFavorite(workout.id)}
-                  >
-                    <Ionicons
-                      name={favorites.has(workout.id) ? "heart" : "heart-outline"}
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.workoutType}>{workout.type}</Text>
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.infoLabel}>Total time: </Text>
-                  <Text style={styles.infoValue}>{workout.totalTime}</Text>
-                </View>
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.infoLabel}>Intensity: </Text>
-                  <Text style={styles.infoValue}>{workout.intensity}/10</Text>
-                </View>
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.infoLabel}>Equipment: </Text>
-                  <Text style={styles.infoValue}>{workout.equipment}</Text>
-                </View>
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.infoLabel}>Muscle Group: </Text>
-                  <Text style={styles.infoValue}>{workout.muscleGroup}</Text>
-                </View>
+              <View style={styles.workoutInfo}>
+                <Text style={styles.workoutTitle}>{workout.title}</Text>
+                <Text style={styles.workoutDetails}>{workout.totalTime} | {workout.equipment}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </SafeAreaView>

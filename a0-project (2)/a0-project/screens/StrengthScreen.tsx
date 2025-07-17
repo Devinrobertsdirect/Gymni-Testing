@@ -3,8 +3,26 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RouteProp } from '@react-navigation/native';
+import HamburgerMenuButton from './HamburgerMenuButton';
 
-export default function StrengthScreen({ navigation, route }) {
+type RootStackParamList = {
+  Strength: undefined | { filters?: any };
+  VideoMode: { workout: any };
+  Filter: { sourceScreen?: string };
+  Fitness: undefined;
+};
+
+type StrengthScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Strength'>;
+type StrengthScreenRouteProp = RouteProp<RootStackParamList, 'Strength'>;
+
+interface StrengthScreenProps {
+  navigation: StrengthScreenNavigationProp;
+  route: StrengthScreenRouteProp;
+}
+
+export default function StrengthScreen({ navigation, route }: StrengthScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState(null);
   const [activeFilterCount, setActiveFilterCount] = useState(0);
@@ -230,12 +248,10 @@ export default function StrengthScreen({ navigation, route }) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.navigate('Fitness')}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 8}}>
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>Strength</Text>
           <View style={{ width: 24 }} />
         </View>

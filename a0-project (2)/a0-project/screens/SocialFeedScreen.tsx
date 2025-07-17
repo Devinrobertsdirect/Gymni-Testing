@@ -168,7 +168,7 @@ export default function SocialFeedScreen({ navigation, route }) {
                       <MaterialCommunityIcons name="fire" size={24} color="#FF9500" />
                       <Text style={styles.reactionCount}>{post.reactions.fire}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.reactionButton}>
+                    <TouchableOpacity style={styles.reactionButton} onPress={() => navigation.navigate('PostDetail', { post })}>
                       <Ionicons name="chatbubble-outline" size={24} color="#8e8e8e" />
                     </TouchableOpacity>
                   </View>

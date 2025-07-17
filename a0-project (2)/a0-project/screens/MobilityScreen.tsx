@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import HamburgerMenuButton from './HamburgerMenuButton';
 
 export default function MobilityScreen({ navigation, route }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,12 +171,10 @@ export default function MobilityScreen({ navigation, route }) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.navigate('Fitness')}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 8}}>
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>Mobility</Text>
           <View style={{ width: 24 }} />
         </View>

@@ -3,6 +3,20 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RouteProp } from '@react-navigation/native';
+import HamburgerMenuButton from './HamburgerMenuButton';
+
+type RootStackParamList = {
+  Calendar: undefined;
+  VideoMode: { workout: any };
+};
+
+type CalendarScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Calendar'>;
+
+interface CalendarScreenProps {
+  navigation: CalendarScreenNavigationProp;
+}
 
 const mockCompletedWorkouts = [
   {
@@ -44,7 +58,7 @@ const mockScheduledWorkouts = [
   }
 ];
 
-export default function CalendarScreen({ navigation }) {
+export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState('calendar');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -65,12 +79,12 @@ export default function CalendarScreen({ navigation }) {
 
   const workoutTypes = [
     { id: 'strength', name: 'Strength', icon: 'barbell' },
-    { id: 'cardio', name: 'Cardio', icon: 'bicycle' },
+    { id: 'cardio', name: 'Cardio', icon: 'bicycle-outline' },
     { id: 'hiit', name: 'HIIT', icon: 'flash' },
-    { id: 'mobility', name: 'Mobility', icon: 'body' }
+    { id: 'mobility', name: 'Mobility', icon: 'body-outline' }
   ];
 
-  const getDaysInMonth = (date) => {
+  const getDaysInMonth = (date: Date): (Date | null)[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -88,28 +102,32 @@ export default function CalendarScreen({ navigation }) {
     return days;
   };
 
-  const hasWorkout = (date) => {
+  const hasWorkout = (date: Date | null): boolean => {
     if (!date) return false;
     const dateStr = date.toISOString().split('T')[0];
-    return mockCompletedWorkouts.some(workout => workout.date === dateStr) ||
-           mockScheduledWorkouts.some(workout => workout.date === dateStr);
+    return (
+      mockCompletedWorkouts.some(workout => workout.date === dateStr) ||
+      mockScheduledWorkouts.some(workout => workout.date === dateStr)
+    );
   };
 
-  const isScheduledWorkout = (date) => {
+  const isScheduledWorkout = (date: Date | null): boolean => {
     if (!date) return false;
     const dateStr = date.toISOString().split('T')[0];
     return mockScheduledWorkouts.some(workout => workout.date === dateStr);
   };
 
-  const isToday = (date) => {
+  const isToday = (date: Date | null): boolean => {
+    if (!date) return false;
     const today = new Date();
-    return date && 
+    return (
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear();
+      date.getFullYear() === today.getFullYear()
+    );
   };
 
-  const handleSearch = (text) => {
+  const handleSearch = (text: string) => {
     setSearchQuery(text);
     const filtered = mockCompletedWorkouts.filter(workout => {
       const workoutDate = new Date(workout.date);
@@ -143,7 +161,7 @@ export default function CalendarScreen({ navigation }) {
     });
   };
 
-  const getWorkoutsForDate = (date) => {
+  const getWorkoutsForDate = (date: Date | null): any[] => {
     if (!date) return [];
     const dateStr = date.toISOString().split('T')[0];
     return mockScheduledWorkouts.filter(workout => workout.date === dateStr);
@@ -154,9 +172,7 @@ export default function CalendarScreen({ navigation }) {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="chevron-back" size={24} color="white" />
-          </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>Calendar</Text>
           <TouchableOpacity onPress={() => setShowScheduleModal(true)}>
             <Ionicons name="add" size={24} color="#FF9500" />
@@ -244,7 +260,7 @@ export default function CalendarScreen({ navigation }) {
                       if (date) {
                         setSelectedDate(date);
                         if (workouts.length > 0) {
-                          toast.message(
+                          toast.success(
                             `Scheduled Workouts for ${date.toLocaleDateString()}:`,
                             {
                               description: workouts.map(w => 
@@ -292,24 +308,21 @@ export default function CalendarScreen({ navigation }) {
                   Scheduled for {selectedDate.toLocaleDateString()}:
                 </Text>
                 {getWorkoutsForDate(selectedDate).map((workout) => (
-                  <View key={workout.id} style={styles.summaryWorkout}>
+                  <TouchableOpacity
+                    key={workout.id}
+                    style={styles.summaryWorkout}
+                    onPress={() => navigation.navigate('VideoMode', { workout })}
+                  >
                     <View style={styles.summaryWorkoutHeader}>
                       <Text style={styles.summaryWorkoutTitle}>{workout.title}</Text>
                       <TouchableOpacity 
                         onPress={() => {
                           // Handle delete workout
-                          toast.message('Delete workout?', {
-                            action: {
-                              label: 'Delete',
-                              onClick: () => {
-                                const index = mockScheduledWorkouts.findIndex(w => w.id === workout.id);
-                                if (index !== -1) {
-                                  mockScheduledWorkouts.splice(index, 1);
-                                  toast.success('Workout deleted');
-                                }
-                              }
-                            }
-                          });
+                          toast.success('Workout deleted');
+                          const index = mockScheduledWorkouts.findIndex(w => w.id === workout.id);
+                          if (index !== -1) {
+                            mockScheduledWorkouts.splice(index, 1);
+                          }
                         }}
                       >
                         <Ionicons name="trash-outline" size={20} color="#FF3B30" />
@@ -317,7 +330,7 @@ export default function CalendarScreen({ navigation }) {
                     </View>
                     <Text style={styles.summaryWorkoutTime}>{workout.time}</Text>
                     <Text style={styles.summaryWorkoutDuration}>{workout.duration} minutes</Text>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             )}

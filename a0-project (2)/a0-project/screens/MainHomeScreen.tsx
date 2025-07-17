@@ -3,11 +3,24 @@ import { useState, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import HamburgerMenuButton from './HamburgerMenuButton';
+import type { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  MainHome: undefined;
+  // Add other routes as needed
+};
+
+type MainHomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainHome'>;
+
+interface MainHomeScreenProps {
+  navigation: MainHomeScreenNavigationProp;
+}
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const IMAGE_SIZE = (SCREEN_WIDTH - 48) / 3;
 
-export default function MainHomeScreen({ navigation }) {
+export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
   const workoutImages = Array(12).fill(null).map((_, i) => (
     `https://api.a0.dev/assets/image?text=fitness%20workout%20${i + 1}&aspect=1:1&seed=${i}`
   ));  const [selectedWorkout, setSelectedWorkout] = useState(null);
@@ -31,12 +44,8 @@ export default function MainHomeScreen({ navigation }) {
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
       <SafeAreaView style={styles.safeArea}>
         {/* Top Bar */}
-        <View style={styles.topBar}>          <TouchableOpacity 
-            style={styles.menuButton}
-            onPress={() => navigation.navigate('Menu')}
-          >
-            <Ionicons name="menu" size={28} color="white" />
-          </TouchableOpacity>
+        <View style={styles.topBar}>
+          <HamburgerMenuButton navigation={navigation} />
           <Image
             source={{ uri: 'https://api.a0.dev/assets/image?text=gymni%20logo%20white&aspect=4:1' }}
             style={styles.logo}
@@ -96,21 +105,30 @@ export default function MainHomeScreen({ navigation }) {
 
           {/* Workout Grid */}
           <View style={styles.workoutGrid}>
-            {workoutImages.map((uri, index) => (          <Pressable 
-            key={index} 
-            style={[
-              styles.workoutItem,
-              selectedWorkout === index && styles.selectedWorkout
-            ]}
-            onPress={() => setSelectedWorkout(index)}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-          >
-            <Image source={{ uri }} style={styles.workoutImage} />
-            <View style={styles.workoutOverlay}>
-              <Text style={styles.workoutText}>Workout {index + 1}</Text>
-            </View>
-          </Pressable>
+            {workoutImages.map((uri, index) => (
+              <Pressable 
+                key={index} 
+                style={[
+                  styles.workoutItem,
+                  selectedWorkout === index && styles.selectedWorkout
+                ]}
+                onPress={() => {
+                  setSelectedWorkout(index);
+                  // Alternate between Cardio and Strength for demonstration
+                  if (index % 2 === 0) {
+                    navigation.navigate('Cardio', { workoutIndex: index });
+                  } else {
+                    navigation.navigate('Strength', { workoutIndex: index });
+                  }
+                }}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+              >
+                <Image source={{ uri }} style={styles.workoutImage} />
+                <View style={styles.workoutOverlay}>
+                  <Text style={styles.workoutText}>Workout {index + 1}</Text>
+                </View>
+              </Pressable>
             ))}
           </View>
         </ScrollView>
@@ -135,7 +153,7 @@ export default function MainHomeScreen({ navigation }) {
           >
             <Ionicons name="calendar-outline" size={24} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Search')}>
             <Ionicons name="search-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>

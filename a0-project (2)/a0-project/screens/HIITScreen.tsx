@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import HamburgerMenuButton from './HamburgerMenuButton';
 
 // Mock HIIT workouts data
 const mockWorkouts = [
@@ -255,12 +256,10 @@ export default function HIITScreen({ navigation, route }) {  const [searchQuery,
         )}
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.navigate('Fitness')}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 8}}>
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>HIIT</Text>
           <View style={{ width: 24 }} />
         </View>

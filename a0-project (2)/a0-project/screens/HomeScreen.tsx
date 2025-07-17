@@ -1,33 +1,96 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
+import HamburgerMenuButton from './HamburgerMenuButton';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+// Apple authentication import (add if installed):
+// import * as AppleAuthentication from 'expo-apple-authentication';
+import API_CLIENT from '../utils/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function HomeScreen({ navigation }) {  const [loading, setLoading] = useState(false);
+WebBrowser.maybeCompleteAuthSession();
+
+export default function HomeScreen({ navigation }: any) {
+  const [loading, setLoading] = useState(false);
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: 'YOUR_EXPO_CLIENT_ID', // Replace with your Expo/Google client ID
+    iosClientId: 'YOUR_IOS_CLIENT_ID',   // Replace with your iOS client ID
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID', // Replace with your Android client ID
+    webClientId: 'YOUR_WEB_CLIENT_ID',   // Replace with your web client ID
+  });
+
+  // Handle Google OAuth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        fetchGoogleUserInfo(authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  const fetchGoogleUserInfo = async (accessToken: string) => {
+    try {
+      setLoading(true);
+      const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const userInfo = await userInfoResponse.json();
+      // userInfo.id (Google ID), userInfo.email
+      const backendResponse: any = await API_CLIENT.post('social_login', {
+        social_id: userInfo.id,
+        email: userInfo.email,
+        token: '', // Optionally pass FCM/device token if available
+      });
+      await AsyncStorage.setItem('userToken', backendResponse.token);
+      toast.success('Successfully signed in!');
+      navigation.navigate('MainHome');
+    } catch (error: any) {
+      toast.error(error.message || 'Google login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      // Initialize Google Sign In with your configuration
-      const clientId = ''; // Add your Google Client ID here
-      const redirectUri = ''; // Add your redirect URI here
-      
-      // Show loading state
-      toast.loading('Connecting to Google...');
-      
-      // For demonstration, simulating auth response
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Here you would handle the actual Google Sign In response
-      // Store tokens and user info
-      
-      toast.success('Successfully signed in!');
-      navigation.navigate('MainHome');
+      await promptAsync();
     } catch (error) {
       toast.error('Failed to connect to Google');
       console.error('Google Sign In Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Apple login handler (requires expo-apple-authentication)
+  const handleAppleSignIn = async () => {
+    try {
+      setLoading(true);
+      // Uncomment and implement if expo-apple-authentication is installed
+      // const credential = await AppleAuthentication.signInAsync({
+      //   requestedScopes: [
+      //     AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      //     AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      //   ],
+      // });
+      // const backendResponse: any = await API_CLIENT.post('social_login', {
+      //   social_id: credential.user,
+      //   email: credential.email,
+      //   token: '',
+      // });
+      // await AsyncStorage.setItem('userToken', backendResponse.token);
+      // toast.success('Successfully signed in!');
+      // navigation.navigate('MainHome');
+      toast.error('Apple login is not yet set up. Please install expo-apple-authentication and configure.');
+    } catch (error) {
+      toast.error('Failed to connect to Apple');
+      console.error('Apple Sign In Error:', error);
     } finally {
       setLoading(false);
     }
@@ -39,6 +102,11 @@ export default function HomeScreen({ navigation }) {  const [loading, setLoading
       style={styles.container}
     >
       <SafeAreaView style={styles.content}>
+        <View style={styles.header}>
+          <HamburgerMenuButton navigation={navigation} />
+          <Text style={styles.headerTitle}>Home</Text>
+          <View style={{ width: 24 }} />
+        </View>
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
@@ -52,14 +120,21 @@ export default function HomeScreen({ navigation }) {  const [loading, setLoading
         <Text style={styles.subText}>Sign in to continue</Text>
 
         {/* Social Sign In Buttons */}
-        <View style={styles.socialButtonsContainer}>          <TouchableOpacity 
-            style={styles.socialButton}            onPress={handleGoogleSignIn}
+        <View style={styles.socialButtonsContainer}>
+          <TouchableOpacity 
+            style={styles.socialButton}
+            onPress={handleGoogleSignIn}
+            disabled={loading}
           >
             <AntDesign name="google" size={24} color="white" />
             <Text style={styles.socialButtonText}>Continue with Google</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity 
+            style={styles.socialButton}
+            onPress={handleAppleSignIn}
+            disabled={loading}
+          >
             <AntDesign name="apple1" size={24} color="white" />
             <Text style={styles.socialButtonText}>Continue with Apple</Text>
           </TouchableOpacity>
@@ -117,6 +192,18 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
   },
   logoContainer: {
     alignItems: 'center',

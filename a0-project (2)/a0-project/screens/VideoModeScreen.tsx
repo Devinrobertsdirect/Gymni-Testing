@@ -144,6 +144,9 @@ export default function VideoModeScreen({ navigation, route }) {
     ));
   };
 
+  // Assume isAuthenticated is a boolean indicating if the user is logged in
+  const isAuthenticated = false; // TODO: Replace with real auth logic
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -490,108 +493,110 @@ export default function VideoModeScreen({ navigation, route }) {
               <Text style={styles.socialText}>Save</Text>
             </TouchableOpacity>
           </View>          {/* Comments Section */}
-          <View style={styles.commentsSection}>
-            <Text style={styles.commentsSectionTitle}>Comments ({comments.length})</Text>
-            
-            {/* Comment Input */}
-            <View style={styles.commentInputContainer}>
-              <TextInput
-                style={styles.commentInput}
-                placeholder="Write a comment..."
-                placeholderTextColor="#8e8e8e"
-                value={commentText}
-                onChangeText={setCommentText}
-                multiline
-              />
-              <TouchableOpacity 
-                style={[
-                  styles.sendButton,
-                  !commentText.trim() && styles.sendButtonDisabled
-                ]}
-                onPress={() => {
-                  if (commentText.trim()) {
-                    const newComment = {
-                      id: Date.now(),
-                      user: {
-                        name: 'You',
-                        avatar: 'https://api.a0.dev/assets/image?text=user%20avatar&aspect=1:1'
-                      },
-                      text: commentText,
-                      timestamp: new Date(),
-                      likes: 0,
-                      isLiked: false
-                    };
-                    setComments([newComment, ...comments]);
-                    setCommentText('');
-                  }
-                }}
-                disabled={!commentText.trim()}
-              >
-                <Ionicons 
-                  name="send" 
-                  size={24} 
-                  color={commentText.trim() ? "#FF9500" : "#666"} 
+          {isAuthenticated && (
+            <View style={styles.commentsSection}>
+              <Text style={styles.commentsSectionTitle}>Comments ({comments.length})</Text>
+              
+              {/* Comment Input */}
+              <View style={styles.commentInputContainer}>
+                <TextInput
+                  style={styles.commentInput}
+                  placeholder="Write a comment..."
+                  placeholderTextColor="#8e8e8e"
+                  value={commentText}
+                  onChangeText={setCommentText}
+                  multiline
                 />
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity 
+                  style={[
+                    styles.sendButton,
+                    !commentText.trim() && styles.sendButtonDisabled
+                  ]}
+                  onPress={() => {
+                    if (commentText.trim()) {
+                      const newComment = {
+                        id: Date.now(),
+                        user: {
+                          name: 'You',
+                          avatar: 'https://api.a0.dev/assets/image?text=user%20avatar&aspect=1:1'
+                        },
+                        text: commentText,
+                        timestamp: new Date(),
+                        likes: 0,
+                        isLiked: false
+                      };
+                      setComments([newComment, ...comments]);
+                      setCommentText('');
+                    }
+                  }}
+                  disabled={!commentText.trim()}
+                >
+                  <Ionicons 
+                    name="send" 
+                    size={24} 
+                    color={commentText.trim() ? "#FF9500" : "#666"} 
+                  />
+                </TouchableOpacity>
+              </View>
 
-            {/* Comments List */}
-            <View style={styles.commentsList}>
-              {comments.length === 0 ? (
-                <Text style={styles.noCommentsText}>Be the first to comment!</Text>
-              ) : (
-                comments.map((comment) => (
-                  <View key={comment.id} style={styles.commentItem}>
-                    <Image 
-                      source={{ uri: comment.user.avatar }}
-                      style={styles.commentAvatar}
-                    />
-                    <View style={styles.commentContent}>
-                      <View style={styles.commentHeader}>
-                        <Text style={styles.commentUser}>{comment.user.name}</Text>
-                        <Text style={styles.commentTime}>
-                          {formatCommentTime(comment.timestamp)}
-                        </Text>
-                      </View>
-                      <Text style={styles.commentText}>{comment.text}</Text>
-                      <View style={styles.commentActions}>
-                        <TouchableOpacity 
-                          style={styles.commentAction}
-                          onPress={() => {
-                            setComments(comments.map(c => 
-                              c.id === comment.id 
-                                ? { 
-                                    ...c, 
-                                    likes: c.isLiked ? c.likes - 1 : c.likes + 1,
-                                    isLiked: !c.isLiked 
-                                  }
-                                : c
-                            ));
-                          }}
-                        >
-                          <Ionicons 
-                            name={comment.isLiked ? "heart" : "heart-outline"}
-                            size={16} 
-                            color={comment.isLiked ? "#FF9500" : "#8e8e8e"}
-                          />
-                          <Text style={[
-                            styles.commentActionText,
-                            comment.isLiked && styles.commentActionTextActive
-                          ]}>
-                            {comment.likes}
+              {/* Comments List */}
+              <View style={styles.commentsList}>
+                {comments.length === 0 ? (
+                  <Text style={styles.noCommentsText}>Be the first to comment!</Text>
+                ) : (
+                  comments.map((comment) => (
+                    <View key={comment.id} style={styles.commentItem}>
+                      <Image 
+                        source={{ uri: comment.user.avatar }}
+                        style={styles.commentAvatar}
+                      />
+                      <View style={styles.commentContent}>
+                        <View style={styles.commentHeader}>
+                          <Text style={styles.commentUser}>{comment.user.name}</Text>
+                          <Text style={styles.commentTime}>
+                            {formatCommentTime(comment.timestamp)}
                           </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.commentAction}>
-                          <Ionicons name="chatbubble-outline" size={16} color="#8e8e8e" />
-                          <Text style={styles.commentActionText}>Reply</Text>
-                        </TouchableOpacity>
+                        </View>
+                        <Text style={styles.commentText}>{comment.text}</Text>
+                        <View style={styles.commentActions}>
+                          <TouchableOpacity 
+                            style={styles.commentAction}
+                            onPress={() => {
+                              setComments(comments.map(c => 
+                                c.id === comment.id 
+                                  ? { 
+                                      ...c, 
+                                      likes: c.isLiked ? c.likes - 1 : c.likes + 1,
+                                      isLiked: !c.isLiked 
+                                    }
+                                  : c
+                              ));
+                            }}
+                          >
+                            <Ionicons 
+                              name={comment.isLiked ? "heart" : "heart-outline"}
+                              size={16} 
+                              color={comment.isLiked ? "#FF9500" : "#8e8e8e"}
+                            />
+                            <Text style={[
+                              styles.commentActionText,
+                              comment.isLiked && styles.commentActionTextActive
+                            ]}>
+                              {comment.likes}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={styles.commentAction}>
+                            <Ionicons name="chatbubble-outline" size={16} color="#8e8e8e" />
+                            <Text style={styles.commentActionText}>Reply</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                ))
-              )}
+                  ))
+                )}
+              </View>
             </View>
-          </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </View>

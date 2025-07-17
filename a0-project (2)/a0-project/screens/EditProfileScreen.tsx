@@ -4,8 +4,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
+import HamburgerMenuButton from './HamburgerMenuButton';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
-export default function EditProfileScreen({ navigation }) {
+type RootStackParamList = {
+  EditProfile: undefined;
+};
+
+type EditProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EditProfile'>;
+
+interface EditProfileScreenProps {
+  navigation: EditProfileScreenNavigationProp;
+}
+
+export default function EditProfileScreen({ navigation }: EditProfileScreenProps) {
   const [photoUri, setPhotoUri] = useState('https://api.a0.dev/assets/image?text=user%20profile&aspect=1:1');
   const [formData, setFormData] = useState({
     fullName: 'Morgan Furbay',
@@ -31,13 +43,7 @@ export default function EditProfileScreen({ navigation }) {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={24} color="white" />
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
           <Text style={styles.headerTitle}>Edit Profile</Text>
           <TouchableOpacity 
             style={styles.saveButton}

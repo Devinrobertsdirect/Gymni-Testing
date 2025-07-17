@@ -1,58 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const mockTrendingPosts = [
-  {
-    id: 1,
-    user: {
-      name: 'Mike Williams',
-      avatar: 'https://api.a0.dev/assets/image?text=mike%20profile&aspect=1:1&seed=2'
-    },
-    content: "Just hit a 405lb deadlift PR! 🔥 6 months of consistent training paying off. #GymProgress #Strength",
-    timestamp: new Date(Date.now() - 3600000 * 2),
-    reactions: {
-      likes: 245,
-      fire: 89
-    },
-    comments: 42,
-    shares: 15,
-    isHot: true
-  },
-  {
-    id: 2,
-    user: {
-      name: 'Sarah Johnson',
-      avatar: 'https://api.a0.dev/assets/image?text=sarah%20profile&aspect=1:1&seed=1'
-    },
-    content: "30-day transformation complete! Down 15lbs and feeling stronger than ever. Consistency is key! 💪 #FitnessJourney",
-    image: 'https://api.a0.dev/assets/image?text=fitness%20transformation&aspect=16:9&seed=1',
-    timestamp: new Date(Date.now() - 3600000 * 5),
-    reactions: {
-      likes: 892,
-      fire: 234
-    },
-    comments: 156,
-    shares: 78,
-    isHot: true
-  },
-  {
-    id: 3,
-    user: {
-      name: 'Emma Davis',
-      avatar: 'https://api.a0.dev/assets/image?text=emma%20profile&aspect=1:1&seed=3'
-    },
-    content: "New 5K personal best: 22:15! Started running 6 months ago at 35:00. Never give up on your goals! 🏃‍♀️ #Running",
-    timestamp: new Date(Date.now() - 86400000),
-    reactions: {
-      likes: 567,
-      fire: 123
-    },
-    comments: 89,
-    shares: 34,
-    isHot: true
-  }
+// Placeholder for fetching real trending posts from backend/API
+async function fetchTrendingPosts() {
+  // TODO: Replace with real API call
+  return [];
+}
+
+const starterPosts = [
+  { id: 1, user: { name: 'Gymn’i Team', avatar: '' }, content: "Welcome to the Gymn’i community! Post your first workout and inspire others.", timestamp: new Date(), reactions: { likes: 0, fire: 0 }, comments: 0, shares: 0 },
+  { id: 2, user: { name: 'Gymn’i Team', avatar: '' }, content: "Tip: Track your progress and celebrate every milestone!", timestamp: new Date(), reactions: { likes: 0, fire: 0 }, comments: 0, shares: 0 },
+  { id: 3, user: { name: 'Gymn’i Team', avatar: '' }, content: "Share your favorite workout routine with the community.", timestamp: new Date(), reactions: { likes: 0, fire: 0 }, comments: 0, shares: 0 },
+  { id: 4, user: { name: 'Gymn’i Team', avatar: '' }, content: "Stay motivated! Check out trending topics and join the conversation.", timestamp: new Date(), reactions: { likes: 0, fire: 0 }, comments: 0, shares: 0 },
+  { id: 5, user: { name: 'Gymn’i Team', avatar: '' }, content: "Invite your friends and grow your fitness network!", timestamp: new Date(), reactions: { likes: 0, fire: 0 }, comments: 0, shares: 0 },
 ];
 
 const trendingTopics = [
@@ -63,8 +25,27 @@ const trendingTopics = [
   { id: 5, tag: '#WeightLoss', posts: 4321 }
 ];
 
+type Post = {
+  id: number;
+  user: { name: string; avatar: string };
+  content: string;
+  timestamp: Date;
+  reactions: { likes: number; fire: number };
+  comments: number;
+  shares: number;
+  isHot?: boolean;
+  image?: string;
+};
+
 export default function TrendingSocialScreen() {
   const [activeFilter, setActiveFilter] = useState('popular');
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    fetchTrendingPosts().then(fetched => {
+      setPosts(fetched && fetched.length > 0 ? fetched : starterPosts);
+    });
+  }, []);
 
   const formatNumber = (num) => {
     if (num >= 1000) {
@@ -83,6 +64,9 @@ export default function TrendingSocialScreen() {
     if (hours > 0) return `${hours}h ago`;
     return 'Just now';
   };
+
+  // Assume isAuthenticated is a boolean indicating if the user is logged in
+  const isAuthenticated = false; // TODO: Replace with real auth logic
 
   return (
     <View style={styles.container}>
@@ -141,10 +125,10 @@ export default function TrendingSocialScreen() {
 
         {/* Trending Posts */}
         <View style={styles.postsContainer}>
-          {mockTrendingPosts.map((post) => (
+          {posts.map((post) => (
             <View key={post.id} style={styles.postCard}>
               <View style={styles.postHeader}>
-                <Image source={{ uri: post.user.avatar }} style={styles.avatar} />
+                <Image source={post.user.avatar ? { uri: post.user.avatar } : require('../assets/icon.png')} style={styles.avatar} />
                 <View style={styles.postHeaderInfo}>
                   <Text style={styles.userName}>{post.user.name}</Text>
                   <Text style={styles.timestamp}>{formatTimestamp(post.timestamp)}</Text>
@@ -156,13 +140,10 @@ export default function TrendingSocialScreen() {
                   </View>
                 )}
               </View>
-
               <Text style={styles.postContent}>{post.content}</Text>
-
               {post.image && (
                 <Image source={{ uri: post.image }} style={styles.postImage} />
               )}
-
               <View style={styles.postStats}>
                 <View style={styles.statItem}>
                   <Ionicons name="heart" size={20} color="#FF9500" />
