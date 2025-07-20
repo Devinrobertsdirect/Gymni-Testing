@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Gymni Fitness",
+    "slug": "gymni-fitness-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gymni.fitnessapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.gymni.fitnessapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "Gymni Fitness - Your personal fitness companion with workouts, challenges, and social features",
+    "extra": {
+      "eas": {
+        "projectId": "15775cbb-6ec1-4f7f-aea2-2dc1987923d0"
+      }
+    }
+  }
+}
