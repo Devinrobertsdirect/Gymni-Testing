@@ -1,5 +1,23 @@
 {
   "android": {
     "package": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "f0a3a699-40d0-4ec3-9419-ebf24ad31493"
+    }
+  },
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f0a3a699-40d0-4ec3-9419-ebf24ad31493"
+      }
+    }
   }
 }

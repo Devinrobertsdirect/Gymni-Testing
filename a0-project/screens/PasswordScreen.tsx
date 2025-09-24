@@ -81,7 +81,7 @@ export default function PasswordScreen({ navigation, route }: any) {
         </View>
 
         <View style={styles.headerContainer}>
-          <Text style={styles.title}>Welcome back Morgan!</Text>
+          <Text style={styles.title}>Welcome back!</Text>
           <Text style={styles.subtitle}>{route.params?.email}</Text>
         </View>
         
