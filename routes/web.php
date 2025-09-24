@@ -13,6 +13,8 @@ use App\Http\Controllers\DemovideoController;
 use App\Http\Controllers\PrivecyController;
 use App\Http\Controllers\WorkOutController;
 use App\Http\Controllers\LogWeightController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ManagerController;
 
 Route::get('/clear-cache', function () {
     $configCache = Artisan::call('config:cache');
@@ -109,4 +111,55 @@ Route::get('/clear', function () {
     \Artisan::call('view:clear');
     \Artisan::call('config:clear');
     echo 'dump-autoload complete';
+});
+
+// Admin Routes
+Route::middleware(['auth'])->group(function () {
+    // Admin Dashboard
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        
+        // User Management
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+        Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+        Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+        
+        // Workout Management
+        Route::get('/workouts', [AdminController::class, 'workouts'])->name('workouts');
+        Route::get('/workouts/create', [AdminController::class, 'createWorkout'])->name('workouts.create');
+        Route::post('/workouts', [AdminController::class, 'storeWorkout'])->name('workouts.store');
+        Route::get('/workouts/{workout}/edit', [AdminController::class, 'editWorkout'])->name('workouts.edit');
+        Route::put('/workouts/{workout}', [AdminController::class, 'updateWorkout'])->name('workouts.update');
+        Route::delete('/workouts/{workout}', [AdminController::class, 'deleteWorkout'])->name('workouts.destroy');
+        
+        // Manager Management
+        Route::get('/managers', [AdminController::class, 'managers'])->name('managers');
+        Route::post('/managers/{user}/generate-code', [AdminController::class, 'generateTrainerCode'])->name('managers.generate-code');
+    });
+    
+    // Manager Routes
+    Route::prefix('manager')->name('manager.')->group(function () {
+        Route::get('/', [ManagerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [ManagerController::class, 'dashboard'])->name('dashboard');
+        
+        // Client Management
+        Route::get('/clients', [ManagerController::class, 'clients'])->name('clients');
+        Route::get('/clients/{client}', [ManagerController::class, 'clientDetails'])->name('clients.show');
+        Route::post('/clients/{client}/assign-workout', [ManagerController::class, 'assignWorkoutToClient'])->name('clients.assign-workout');
+        Route::get('/clients/{client}/progress', [ManagerController::class, 'clientProgress'])->name('clients.progress');
+        
+        // Workout Management
+        Route::get('/workouts', [ManagerController::class, 'workouts'])->name('workouts');
+        Route::get('/workouts/create', [ManagerController::class, 'createWorkout'])->name('workouts.create');
+        Route::post('/workouts', [ManagerController::class, 'storeWorkout'])->name('workouts.store');
+        Route::get('/workouts/{workout}/edit', [ManagerController::class, 'editWorkout'])->name('workouts.edit');
+        Route::put('/workouts/{workout}', [ManagerController::class, 'updateWorkout'])->name('workouts.update');
+        
+        // Trainer Code Management
+        Route::get('/trainer-code', [ManagerController::class, 'trainerCode'])->name('trainer-code');
+        Route::post('/regenerate-trainer-code', [ManagerController::class, 'regenerateTrainerCode'])->name('regenerate-trainer-code');
+    });
 });
