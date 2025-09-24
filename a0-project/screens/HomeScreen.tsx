@@ -17,10 +17,10 @@ WebBrowser.maybeCompleteAuthSession();
 export default function HomeScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: 'YOUR_EXPO_CLIENT_ID', // Replace with your Expo/Google client ID
-    iosClientId: 'YOUR_IOS_CLIENT_ID',   // Replace with your iOS client ID
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID', // Replace with your Android client ID
-    webClientId: 'YOUR_WEB_CLIENT_ID',   // Replace with your web client ID
+    clientId: '796288733107-dre8gjp35ust079chrume180ucneuotj.apps.googleusercontent.com', // Replace with your Expo/Google client ID
+    iosClientId: '796288733107-0mlqtiklpgqk5v1cb416terp273lls5m.apps.googleusercontent.com',   // Replace with your iOS client ID
+    androidClientId: '796288733107-n21o6hupfudps9m7rdkfleo8kuqc221o.apps.googleusercontent.com', // Replace with your Android client ID
+    webClientId: '796288733107-dre8gjp35ust079chrume180ucneuotj.apps.googleusercontent.com',   // Replace with your web client ID
   });
 
   // Handle Google OAuth response

@@ -1,0 +1,221 @@
+﻿import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import HamburgerMenuButton from './HamburgerMenuButton';
+
+// Mock lacrosse workouts (only sport with content for now)
+const lacrosseWorkouts = [
+  {
+    id: 1,
+    title: "Lacrosse Agility Drills",
+    type: "Sports - Lacrosse",
+    totalTime: "30 minutes",
+    intensity: 8,
+    equipment: "Cones, Lacrosse Stick",
+    image: "https://api.a0.dev/assets/image?text=lacrosse%20agility%20drills&aspect=16:9&seed=1"
+  },
+  {
+    id: 2,
+    title: "Stick Skills Training",
+    type: "Sports - Lacrosse",
+    totalTime: "25 minutes",
+    intensity: 6,
+    equipment: "Lacrosse Stick, Ball",
+    image: "https://api.a0.dev/assets/image?text=lacrosse%20stick%20skills&aspect=16:9&seed=2"
+  }
+];
+
+const sports = [
+  { id: 'lacrosse', name: 'Lacrosse', icon: 'hockey-puck', hasWorkouts: true },
+  { id: 'basketball', name: 'Basketball', icon: 'basketball', hasWorkouts: false },
+  { id: 'football', name: 'Football', icon: 'american-football', hasWorkouts: false },
+  { id: 'soccer', name: 'Soccer', icon: 'football', hasWorkouts: false },
+  { id: 'baseball', name: 'Baseball', icon: 'baseball', hasWorkouts: false },
+  { id: 'tennis', name: 'Tennis', icon: 'tennis', hasWorkouts: false }
+];
+
+export default function SportsScreen({ navigation }) {
+  const [selectedSport, setSelectedSport] = useState('lacrosse');
+
+  const handleSportSelect = (sportId, hasWorkouts, sportName) => {
+    setSelectedSport(sportId);
+    if (!hasWorkouts) {
+      alert(`${sportName} workouts coming soon!`);
+    }
+  };
+
+  const renderWorkouts = () => {
+    if (selectedSport === 'lacrosse') {
+      return lacrosseWorkouts.map((workout) => (
+        <TouchableOpacity
+          key={workout.id}
+          style={styles.workoutCard}
+          onPress={() => navigation.navigate('VideoMode', { workout })}
+        >
+          <Image source={{ uri: workout.image }} style={styles.workoutImage} />
+          <View style={styles.workoutInfo}>
+            <Text style={styles.workoutTitle}>{workout.title}</Text>
+            <Text style={styles.workoutDetails}>{workout.totalTime} | {workout.equipment}</Text>
+          </View>
+        </TouchableOpacity>
+      ));
+    }
+    return (
+      <View style={styles.comingSoon}>
+        <Text style={styles.comingSoonText}>Coming Soon!</Text>
+        <Text style={styles.comingSoonSubtext}>Workouts for this sport are being developed.</Text>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 8}}>
+            <Ionicons name="chevron-back" size={24} color="white" />
+          </TouchableOpacity>
+          <HamburgerMenuButton navigation={navigation} />
+          <Text style={styles.headerTitle}>Sports</Text>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* Sports Tabs */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.sportsTabsContainer}
+          contentContainerStyle={styles.sportsTabsContent}
+        >
+          {sports.map((sport) => (
+            <TouchableOpacity
+              key={sport.id}
+              style={[
+                styles.sportTab,
+                selectedSport === sport.id && styles.activeSportTab
+              ]}
+              onPress={() => handleSportSelect(sport.id, sport.hasWorkouts, sport.name)}
+            >
+              <MaterialCommunityIcons 
+                name={sport.icon} 
+                size={24} 
+                color={selectedSport === sport.id ? '#FF9500' : '#8E8E93'} 
+              />
+              <Text style={[
+                styles.sportTabText,
+                selectedSport === sport.id && styles.activeSportTabText
+              ]}>
+                {sport.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Workout Content */}
+        <ScrollView style={styles.workoutList}>
+          {renderWorkouts()}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FF9500',
+  },
+  sportsTabsContainer: {
+    maxHeight: 80,
+  },
+  sportsTabsContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  sportTab: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginRight: 12,
+    borderRadius: 12,
+    backgroundColor: '#1C1C1E',
+    minWidth: 80,
+  },
+  activeSportTab: {
+    backgroundColor: 'rgba(255, 149, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF9500',
+  },
+  sportTabText: {
+    color: '#8E8E93',
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  activeSportTabText: {
+    color: '#FF9500',
+  },
+  workoutList: {
+    flex: 1,
+    padding: 16,
+  },
+  workoutCard: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  workoutImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  workoutInfo: {
+    padding: 16,
+  },
+  workoutTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 4,
+  },
+  workoutDetails: {
+    color: '#8E8E93',
+    fontSize: 14,
+  },
+  comingSoon: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 100,
+  },
+  comingSoonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FF9500',
+    marginBottom: 8,
+  },
+  comingSoonSubtext: {
+    fontSize: 16,
+    color: '#8E8E93',
+    textAlign: 'center',
+  },
+});

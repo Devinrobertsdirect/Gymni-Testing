@@ -1,4 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toast } from 'sonner-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -64,7 +66,7 @@ export default function MenuScreen({ navigation }) {
             <Text style={styles.menuText}>Gymni feed</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
             <Ionicons name="musical-notes-outline" size={24} color="#FF9500" />
             <Text style={styles.menuText}>Spotify</Text>
           </TouchableOpacity>
@@ -77,7 +79,7 @@ export default function MenuScreen({ navigation }) {
             <Text style={styles.menuText}>Settings</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={24} color="#FF9500" />
             <Text style={styles.menuText}>Logout</Text>
           </TouchableOpacity>

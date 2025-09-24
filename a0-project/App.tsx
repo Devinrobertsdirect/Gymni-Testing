@@ -65,6 +65,9 @@ export type RootStackParamList = {
   SocialFeed: undefined;
   GroupDetail: { group: any };
   AboutUs: undefined;
+  Search: undefined;
+  PostDetail: { post: any };
+  Sports: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -99,6 +102,9 @@ function RootStack() {  return (    <Stack.Navigator screenOptions={{ headerShow
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="SupportFAQ" component={SupportFAQScreen} />
+      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+      <Stack.Screen name="Sports" component={SportsScreen} />
     </Stack.Navigator>
   );
 }

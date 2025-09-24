@@ -1,0 +1,46 @@
+﻿{
+  "project_info": {
+    "project_number": "796288733107",
+    "project_id": "gymni-fitness",
+    "storage_bucket": "gymni-fitness.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796288733107:android:a0fb528181f73465a605c6",
+        "android_client_info": {
+          "package_name": "com.devinrobertsdirect.gymnifitnessapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796288733107-dre8gjp35ust079chrume180ucneuotj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABMQECGFOzhevhAxgpGKNpUGg2Hlwsh7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796288733107-dre8gjp35ust079chrume180ucneuotj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "796288733107-0mlqtiklpgqk5v1cb416terp273lls5m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
