@@ -26,7 +26,8 @@
     "sonner-native": "^0.21.0",
     "expo": "~53.0.13",
     "react": "19.0.0",
-    "react-native": "0.79.4"
+    "react-native": "0.79.4",
+    "firebase": "^10.7.0"
   },
   "name": "gymnifitnessapp-gymnifitness-0998c33744a3",
   "version": "1.0.0"

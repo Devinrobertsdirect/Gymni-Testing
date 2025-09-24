@@ -471,7 +471,8 @@ export default function ChallengesScreen({ navigation, route }) {
                         <TouchableOpacity 
                           style={[styles.actionButton, styles.completeButton]}
                           onPress={() => {
-                            const finalScore = prompt('Enter your final score:');
+                            // TODO: Replace with proper React Native input modal
+                            const finalScore = '425 lbs'; // Placeholder - implement proper input modal
                             if (finalScore) {
                               handleCompleteChallenge(challenge.id, finalScore);
                             }

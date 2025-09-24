@@ -2,12 +2,12 @@
 // Maps workout types to their corresponding asset files
 
 export const WORKOUT_ASSETS = {
-  cardio: require('../assets/workout-images/cardio.png'),
-  strength: require('../assets/workout-images/strength.png'),
-  hiit: require('../assets/workout-images/hiit.png'),
-  mobility: require('../assets/workout-images/mobility.png'),
-  default: require('../assets/workout-images/dumbbell.png'),
-  trophy: require('../assets/workout-images/trophy.png'),
+  cardio: require('../../assets/workout-images/cardio.png'),
+  strength: require('../../assets/workout-images/strength.png'),
+  hiit: require('../../assets/workout-images/hiit.png'),
+  mobility: require('../../assets/workout-images/mobility.png'),
+  default: require('../../assets/workout-images/dumbbell.png'),
+  trophy: require('../../assets/workout-images/trophy.png'),
 } as const;
 
 export const getWorkoutAsset = (type: string) => {
