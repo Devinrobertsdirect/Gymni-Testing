@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import { getWorkoutAsset } from '../config/workoutAssets';
 import HamburgerMenuButton from './HamburgerMenuButton';
 
 export default function MobilityScreen({ navigation, route }) {
@@ -43,7 +44,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 5,
       equipment: "Bodyweight",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=yoga%20flow&aspect=16:9&seed=1"
+      image: "getWorkoutAsset('mobility')?text=yoga%20flow&aspect=16:9&seed=1"
     },
     {
       id: 2,
@@ -53,7 +54,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 4,
       equipment: "Resistance Bands",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=dynamic%20stretching&aspect=16:9&seed=2"
+      image: "getWorkoutAsset('mobility')?text=dynamic%20stretching&aspect=16:9&seed=2"
     },
     {
       id: 3,
@@ -63,7 +64,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 3,
       equipment: "Bodyweight",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=joint%20mobility&aspect=16:9&seed=3"
+      image: "getWorkoutAsset('mobility')?text=joint%20mobility&aspect=16:9&seed=3"
     },
     {
       id: 4,
@@ -73,7 +74,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 4,
       equipment: "Resistance Bands",
       muscleGroup: "lower",
-      image: "https://api.a0.dev/assets/image?text=band%20flexibility&aspect=16:9&seed=4"
+      image: "getWorkoutAsset('mobility')?text=band%20flexibility&aspect=16:9&seed=4"
     },
     {
       id: 5,
@@ -83,7 +84,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 6,
       equipment: "Foam Roller",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=foam%20rolling&aspect=16:9&seed=5"
+      image: "getWorkoutAsset('mobility')?text=foam%20rolling&aspect=16:9&seed=5"
     },
     {
       id: 6,
@@ -93,7 +94,7 @@ export default function MobilityScreen({ navigation, route }) {
       intensity: 3,
       equipment: "Bodyweight",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=recovery%20flow&aspect=16:9&seed=6"
+      image: "getWorkoutAsset('mobility')?text=recovery%20flow&aspect=16:9&seed=6"
     }
   ];
 

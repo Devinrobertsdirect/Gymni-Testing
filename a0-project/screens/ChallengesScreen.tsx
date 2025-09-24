@@ -1,12 +1,46 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { toast } from 'sonner-native';
 
-// Mock data for all challenges including pending and in-progress ones
-const mockChallenges = [
+// Firebase imports
+import { db, auth } from '../config/firebase';
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  deleteDoc, 
+  doc,
+  updateDoc,
+  onSnapshot,
+  orderBy 
+} from 'firebase/firestore';
+
+interface Challenge {
+  id: string;
+  type: string;
+  name: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'expired';
+  challenger: string;
+  challenged?: string;
+  date: string;
+  description: string;
+  timeRemaining?: string;
+  currentProgress?: string;
+  targetScore?: string;
+  expiresAt: string;
+  userId: string;
+  createdAt: any;
+  participants?: string[];
+}
+
+// Mock data for fallback/initial state
+const mockChallenges: Challenge[] = [
   {
     id: 1,
     type: 'strength',
@@ -115,7 +149,38 @@ const getTypeIcon = (type) => {
 export default function ChallengesScreen({ navigation, route }) {
   const [activeTab, setActiveTab] = useState('all');
   const [sortBy, setSortBy] = useState('date');
-  const [expandedId, setExpandedId] = useState(null);  const [challenges, setChallenges] = useState(mockChallenges);
+  const [expandedId, setExpandedId] = useState(null);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch challenges from Firestore
+  useEffect(() => {
+    if (!auth.currentUser?.uid) return;
+
+    const userId = auth.currentUser.uid;
+
+    // Set up real-time listener for challenges
+    const challengesQuery = query(
+      collection(db, 'challenges'),
+      where('participants', 'array-contains', userId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(challengesQuery, (snapshot) => {
+      const challengesData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Challenge[];
+      setChallenges(challengesData);
+    }, (error) => {
+      console.error('Error fetching challenges:', error);
+      // Fallback to mock data if Firebase fails
+      setChallenges(mockChallenges);
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
+  }, [auth.currentUser]);
 
   // Handle new challenges being added
   React.useEffect(() => {
@@ -125,7 +190,79 @@ export default function ChallengesScreen({ navigation, route }) {
       navigation.setParams({ newChallenge: null });
     }
   }, [route.params?.newChallenge]);
-  const [sortOrder, setSortOrder] = useState('desc');  const getSortedChallenges = () => {
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  // Firebase challenge actions
+  const handleAcceptChallenge = async (challengeId: string) => {
+    try {
+      setLoading(true);
+      await updateDoc(doc(db, 'challenges', challengeId), {
+        status: 'in-progress',
+        participants: [...(challenges.find(c => c.id === challengeId)?.participants || []), auth.currentUser?.uid],
+        acceptedAt: new Date()
+      });
+      toast.success('Challenge accepted!');
+    } catch (error) {
+      console.error('Error accepting challenge:', error);
+      toast.error('Failed to accept challenge');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeclineChallenge = async (challengeId: string) => {
+    try {
+      setLoading(true);
+      await updateDoc(doc(db, 'challenges', challengeId), {
+        status: 'declined',
+        declinedBy: auth.currentUser?.uid,
+        declinedAt: new Date()
+      });
+      toast.success('Challenge declined');
+    } catch (error) {
+      console.error('Error declining challenge:', error);
+      toast.error('Failed to decline challenge');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteChallenge = async (challengeId: string, finalScore: string) => {
+    try {
+      setLoading(true);
+      await updateDoc(doc(db, 'challenges', challengeId), {
+        status: 'completed',
+        finalScore: finalScore,
+        completedAt: new Date(),
+        completedBy: auth.currentUser?.uid
+      });
+      toast.success('Challenge completed!');
+    } catch (error) {
+      console.error('Error completing challenge:', error);
+      toast.error('Failed to complete challenge');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForfeitChallenge = async (challengeId: string) => {
+    try {
+      setLoading(true);
+      await updateDoc(doc(db, 'challenges', challengeId), {
+        status: 'forfeited',
+        forfeitedBy: auth.currentUser?.uid,
+        forfeitedAt: new Date()
+      });
+      toast.success('Challenge forfeited');
+    } catch (error) {
+      console.error('Error forfeiting challenge:', error);
+      toast.error('Failed to forfeit challenge');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSortedChallenges = () => {
     let filtered = [...challenges];
     
     // Filter based on active tab
@@ -326,48 +463,18 @@ export default function ChallengesScreen({ navigation, route }) {
                           <Text style={styles.actionButtonText}>Update Progress</Text>
                         </TouchableOpacity>
                         <TouchableOpacity 
-                          style={[styles.actionButton, styles.forfeitButton]}                          onPress={() => {
-                            toast.message('Forfeit Challenge', {
-                              description: 'Are you sure? This cannot be undone.',
-                              action: {
-                                label: 'Forfeit',
-                                onClick: () => {
-                                  // Update the challenge status to completed with loss outcome
-                                  const updatedChallenges = challenges.map(c => {
-                                    if (c.id === challenge.id) {
-                                      return {
-                                        ...c,
-                                        status: undefined, // Remove in-progress status
-                                        outcome: 'loss',
-                                        date: new Date().toISOString().split('T')[0],
-                                        score: `${c.currentProgress} vs ${c.targetScore}`,
-                                        comments: 'Challenge forfeited'
-                                      };
-                                    }
-                                    return c;
-                                  });
-                                  setChallenges(updatedChallenges);
-                                  setExpandedId(null);
-                                  toast.error('Challenge forfeited');
-                                }
-                              }
-                            });
-                          }}
+                          style={[styles.actionButton, styles.forfeitButton]}
+                          onPress={() => handleForfeitChallenge(challenge.id)}
                         >
                           <Text style={styles.actionButtonText}>Forfeit</Text>
                         </TouchableOpacity>
                         <TouchableOpacity 
                           style={[styles.actionButton, styles.completeButton]}
                           onPress={() => {
-                            toast.message('Complete Challenge', {
-                              description: 'Submit your final score to complete',
-                              action: {
-                                label: 'Submit',
-                                onClick: () => {
-                                  toast.success('Challenge completed! 🎉');
-                                }
-                              }
-                            });
+                            const finalScore = prompt('Enter your final score:');
+                            if (finalScore) {
+                              handleCompleteChallenge(challenge.id, finalScore);
+                            }
                           }}
                         >
                           <Text style={styles.actionButtonText}>Complete Challenge</Text>
@@ -398,39 +505,14 @@ export default function ChallengesScreen({ navigation, route }) {
                 </View>
                       <View style={styles.actionButtons}>
                         <TouchableOpacity 
-                          style={[styles.actionButton, styles.acceptButton]}            onPress={() => {
-              // Update the challenge from pending to in-progress
-              const updatedChallenges = challenges.map(c => {
-                if (c.id === challenge.id) {
-                  return {
-                    ...c,
-                    status: 'in-progress',
-                    currentProgress: '0',
-                    targetScore: c.description.includes('lbs') ? '405 lbs' : 
-                      c.description.includes('5K') ? '25:00' : '0',
-                    timeRemaining: '47h 59m',
-                    expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-                    challenger: c.challenger,
-                    challenged: 'You'
-                  };
-                }
-                return c;
-              });
-              setChallenges(updatedChallenges);
-              setExpandedId(null);
-              toast.success('Challenge accepted! 💪', {
-                description: 'The challenge has been added to your active challenges'
-              });
-            }}
+                          style={[styles.actionButton, styles.acceptButton]}
+                          onPress={() => handleAcceptChallenge(challenge.id)}
                         >
                           <Text style={styles.actionButtonText}>Accept Challenge</Text>
                         </TouchableOpacity>
                         <TouchableOpacity 
                           style={[styles.actionButton, styles.denyButton]}
-                          onPress={() => {
-                            toast.message('Challenge declined');
-                            // Here you would handle the challenge denial
-                          }}
+                          onPress={() => handleDeclineChallenge(challenge.id)}
                         >
                           <Text style={styles.actionButtonText}>Decline</Text>
                         </TouchableOpacity>

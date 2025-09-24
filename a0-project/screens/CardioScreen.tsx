@@ -2,7 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';  // Mock cardio workouts data
+import { useState } from 'react';
+import { getWorkoutAsset } from '../config/workoutAssets';
+
+// Mock cardio workouts data
   const mockWorkouts = [
     {
       id: 1,
@@ -12,7 +15,7 @@ import { useState } from 'react';  // Mock cardio workouts data
       intensity: 7,
       equipment: "Treadmill",
       muscleGroup: "lower",
-      image: "https://api.a0.dev/assets/image?text=endurance%20run%20cardio&aspect=16:9&seed=1"
+      image: "getWorkoutAsset('cardio')?text=endurance%20run%20cardio&aspect=16:9&seed=1"
     },
     {
       id: 5,
@@ -22,7 +25,7 @@ import { useState } from 'react';  // Mock cardio workouts data
       intensity: 9,
       equipment: "Rowing Machine",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=rowing%20cardio&aspect=16:9&seed=5"
+      image: "getWorkoutAsset('cardio')?text=rowing%20cardio&aspect=16:9&seed=5"
     },
     {
       id: 6,
@@ -32,7 +35,7 @@ import { useState } from 'react';  // Mock cardio workouts data
       intensity: 8,
       equipment: "None",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=bodyweight%20cardio&aspect=16:9&seed=6"
+      image: "getWorkoutAsset('cardio')?text=bodyweight%20cardio&aspect=16:9&seed=6"
     },
   {
     id: 2,
@@ -42,7 +45,7 @@ import { useState } from 'react';  // Mock cardio workouts data
     intensity: 9,
     equipment: "Stationary Bike",
     muscleGroup: "lower",
-    image: "https://api.a0.dev/assets/image?text=cycling%20cardio&aspect=16:9&seed=2"
+    image: "getWorkoutAsset('cardio')?text=cycling%20cardio&aspect=16:9&seed=2"
   },
   {
     id: 3,
@@ -52,7 +55,7 @@ import { useState } from 'react';  // Mock cardio workouts data
     intensity: 6,
     equipment: "Pool",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=swimming%20cardio&aspect=16:9&seed=3"
+    image: "getWorkoutAsset('cardio')?text=swimming%20cardio&aspect=16:9&seed=3"
   },
   {
     id: 4,
@@ -62,7 +65,7 @@ import { useState } from 'react';  // Mock cardio workouts data
     intensity: 8,
     equipment: "Jump Rope",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=jump%20rope%20cardio&aspect=16:9&seed=4"
+    image: "getWorkoutAsset('cardio')?text=jump%20rope%20cardio&aspect=16:9&seed=4"
   }
 ];
 

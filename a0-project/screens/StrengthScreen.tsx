@@ -6,6 +6,7 @@ import { useState } from 'react';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import HamburgerMenuButton from './HamburgerMenuButton';
+import { getWorkoutAsset } from '../config/workoutAssets';
 
 type RootStackParamList = {
   Strength: undefined | { filters?: any };
@@ -59,7 +60,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 7,
       equipment: "Bodyweight",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=bodyweight%20circuit%20training&aspect=16:9&seed=1"
+      image: "getWorkoutAsset('strength')?text=bodyweight%20circuit%20training&aspect=16:9&seed=1"
     },
     {
       id: 2,
@@ -69,7 +70,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 8,
       equipment: "Dumbbells",
       muscleGroup: "upper",
-      image: "https://api.a0.dev/assets/image?text=dumbbell%20upper%20body&aspect=16:9&seed=2"
+      image: "getWorkoutAsset('strength')?text=dumbbell%20upper%20body&aspect=16:9&seed=2"
     },
     {
       id: 3,
@@ -79,7 +80,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 6,
       equipment: "Resistance Bands",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=resistance%20band%20workout&aspect=16:9&seed=3"
+      image: "getWorkoutAsset('strength')?text=resistance%20band%20workout&aspect=16:9&seed=3"
     },
     {
       id: 4,
@@ -89,7 +90,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 8,
       equipment: "Cable Machine",
       muscleGroup: "upper",
-      image: "https://api.a0.dev/assets/image?text=cable%20machine%20workout&aspect=16:9&seed=4"
+      image: "getWorkoutAsset('strength')?text=cable%20machine%20workout&aspect=16:9&seed=4"
     },
     {
       id: 5,
@@ -99,7 +100,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 9,
       equipment: "Full Gym",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=full%20gym%20workout&aspect=16:9&seed=5"
+      image: "getWorkoutAsset('strength')?text=full%20gym%20workout&aspect=16:9&seed=5"
     },
     {
       id: 6,
@@ -109,7 +110,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 7,
       equipment: "Kettlebell",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=kettlebell%20workout&aspect=16:9&seed=6"
+      image: "getWorkoutAsset('strength')?text=kettlebell%20workout&aspect=16:9&seed=6"
     },
     {
       id: 7,
@@ -119,7 +120,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 8,
       equipment: "Dumbbells",
       muscleGroup: "lower",
-      image: "https://api.a0.dev/assets/image?text=dumbbell%20leg%20workout&aspect=16:9&seed=7"
+      image: "getWorkoutAsset('strength')?text=dumbbell%20leg%20workout&aspect=16:9&seed=7"
     },
     {
       id: 8,
@@ -129,7 +130,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 6,
       equipment: "Resistance Bands",
       muscleGroup: "upper",
-      image: "https://api.a0.dev/assets/image?text=resistance%20band%20upper&aspect=16:9&seed=8"
+      image: "getWorkoutAsset('strength')?text=resistance%20band%20upper&aspect=16:9&seed=8"
     },
     {
       id: 9,
@@ -139,7 +140,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 7,
       equipment: "Cable Machine",
       muscleGroup: "core",
-      image: "https://api.a0.dev/assets/image?text=cable%20core%20workout&aspect=16:9&seed=9"
+      image: "getWorkoutAsset('strength')?text=cable%20core%20workout&aspect=16:9&seed=9"
     },
     {
       id: 10,
@@ -149,7 +150,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 9,
       equipment: "Bodyweight",
       muscleGroup: "full",
-      image: "https://api.a0.dev/assets/image?text=bodyweight%20hiit&aspect=16:9&seed=10"
+      image: "getWorkoutAsset('strength')?text=bodyweight%20hiit&aspect=16:9&seed=10"
     },
     {
       id: 11,
@@ -159,7 +160,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 8,
       equipment: "Kettlebell",
       muscleGroup: "lower",
-      image: "https://api.a0.dev/assets/image?text=kettlebell%20legs&aspect=16:9&seed=11"
+      image: "getWorkoutAsset('strength')?text=kettlebell%20legs&aspect=16:9&seed=11"
     },
     {
       id: 12,
@@ -169,7 +170,7 @@ export default function StrengthScreen({ navigation, route }: StrengthScreenProp
       intensity: 9,
       equipment: "Full Gym",
       muscleGroup: "upper",
-      image: "https://api.a0.dev/assets/image?text=gym%20upper%20body&aspect=16:9&seed=12"
+      image: "getWorkoutAsset('strength')?text=gym%20upper%20body&aspect=16:9&seed=12"
     }
   ];
 

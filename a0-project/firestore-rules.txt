@@ -1,0 +1,71 @@
+# Firestore Security Rules
+# Copy and paste these rules into Firebase Console > Firestore > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only access their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Workout events - users can only access their own workouts
+    match /workoutEvents/{eventId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Challenges - users can read all challenges but only write their own
+    match /challenges/{challengeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Challenge participants - users can read/write their own participation
+    match /challengeParticipants/{participantId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Social feed posts - users can read all posts but only write their own
+    match /posts/{postId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Post likes - users can read all likes but only write their own
+    match /postLikes/{likeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Workout templates - public read, admin write
+    match /workoutTemplates/{templateId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // User progress tracking
+    match /userProgress/{progressId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // App settings and announcements - public read, admin write
+    match /appSettings/{settingId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    match /announcements/{announcementId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+  }
+}

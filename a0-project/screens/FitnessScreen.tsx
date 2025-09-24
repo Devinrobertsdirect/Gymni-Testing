@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { WORKOUT_TYPES } from '../config/workoutAssets';
 
-const FitnessCard = ({ title, icon, onPress }) => (
+const FitnessCard = ({ title, icon, onPress, description }) => (
   <TouchableOpacity style={styles.card} onPress={onPress}>
     <View style={styles.cardContent}>
       {icon}
       <View style={styles.cardTextContainer}>
         <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.cardSubtitle}>Fitness</Text>
+        <Text style={styles.cardSubtitle}>{description}</Text>
       </View>
     </View>
   </TouchableOpacity>
@@ -29,52 +30,21 @@ export default function FitnessScreen({ navigation }) {
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          <FitnessCard
-            title="HIIT"
-            icon={
-              <MaterialCommunityIcons 
-                name="run-fast" 
-                size={32} 
-                color="#FF9500" 
-              />
-            }            onPress={() => navigation.navigate('HIIT')}
-          />
-
-          <FitnessCard
-            title="Strength"
-            icon={
-              <FontAwesome5 
-                name="dumbbell" 
-                size={32} 
-                color="#FF9500" 
-              />
-            }
-            onPress={() => navigation.navigate('Strength')}
-          />
-
-          <FitnessCard
-            title="Cardio"
-            icon={
-              <MaterialCommunityIcons 
-                name="heart-pulse" 
-                size={32} 
-                color="#FF9500" 
-              />
-            }
-            onPress={() => navigation.navigate('Cardio')}
-          />
-
-          <FitnessCard
-            title="Mobility"
-            icon={
-              <MaterialCommunityIcons 
-                name="yoga" 
-                size={32} 
-                color="#FF9500" 
-              />
-            }
-            onPress={() => navigation.navigate('Mobility')}
-          />
+          {WORKOUT_TYPES.map((workout) => (
+            <FitnessCard
+              key={workout.id}
+              title={workout.name}
+              description={workout.description}
+              icon={
+                <Image 
+                  source={workout.asset} 
+                  style={styles.workoutIcon}
+                  resizeMode="contain"
+                />
+              }
+              onPress={() => navigation.navigate(workout.name)}
+            />
+          ))}
         </ScrollView>
 
         <View style={styles.bottomNav}>          <TouchableOpacity 
@@ -150,6 +120,11 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 16,
     color: '#8E8E93',
+  },
+  workoutIcon: {
+    width: 32,
+    height: 32,
+    tintColor: '#FF9500',
   },
   bottomNav: {
     flexDirection: 'row',

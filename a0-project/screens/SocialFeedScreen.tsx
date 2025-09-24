@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -7,8 +7,41 @@ import GroupsSocialScreen from './GroupsSocialScreen';
 import TrendingSocialScreen from './TrendingSocialScreen';
 import { toast } from 'sonner-native';
 
-// Mock data for initial posts
-const initialPosts = [
+// Firebase imports
+import { db, auth } from '../config/firebase';
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  deleteDoc, 
+  doc,
+  updateDoc,
+  onSnapshot,
+  orderBy 
+} from 'firebase/firestore';
+
+interface Post {
+  id: string;
+  userId: string;
+  user: {
+    name: string;
+    avatar: string;
+  };
+  content: string;
+  images?: string[];
+  workoutType?: string;
+  timestamp: Date;
+  reactions: {
+    likes: number;
+    fire: number;
+  };
+  createdAt: any;
+}
+
+// Mock data for fallback/initial state
+const initialPosts: Post[] = [
   {
     id: 1,
     user: {
@@ -71,9 +104,92 @@ const formatTimestamp = (date: Date) => {
 
 export default function SocialFeedScreen({ navigation, route }) {
   const [activeTab, setActiveTab] = useState(route.params?.initialTab || 'feed');
-  const [posts, setPosts] = useState(initialPosts);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch posts from Firestore
+  useEffect(() => {
+    const postsQuery = query(
+      collection(db, 'posts'),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+      const postsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Post[];
+      setPosts(postsData);
+    }, (error) => {
+      console.error('Error fetching posts:', error);
+      // Fallback to mock data if Firebase fails
+      setPosts(initialPosts);
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
+  }, []);
+
+  // Firebase functions
+  const handleCreatePost = async () => {
+    if (!newPost.trim() || !auth.currentUser?.uid) {
+      toast.error('Please enter some content');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await addDoc(collection(db, 'posts'), {
+        userId: auth.currentUser.uid,
+        content: newPost.trim(),
+        reactions: {
+          likes: 0,
+          fire: 0
+        },
+        createdAt: new Date(),
+        timestamp: new Date()
+      });
+
+      setNewPost('');
+      setShowShareModal(false);
+      toast.success('Post shared successfully!');
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast.error('Failed to share post');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLikePost = async (postId: string) => {
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      await updateDoc(doc(db, 'posts', postId), {
+        'reactions.likes': post.reactions.likes + 1
+      });
+    } catch (error) {
+      console.error('Error liking post:', error);
+      toast.error('Failed to like post');
+    }
+  };
+
+  const handleFirePost = async (postId: string) => {
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      await updateDoc(doc(db, 'posts', postId), {
+        'reactions.fire': post.reactions.fire + 1
+      });
+    } catch (error) {
+      console.error('Error firing post:', error);
+      toast.error('Failed to fire post');
+    }
+  };
 
   // Mock user groups
   const userGroups = [
@@ -88,29 +204,8 @@ export default function SocialFeedScreen({ navigation, route }) {
   };
 
   const handleShare = (type: 'all' | 'friends' | number) => {
-    const newPostObj = {
-      id: Date.now(),
-      user: {
-        name: 'You',
-        avatar: 'https://api.a0.dev/assets/image?text=user%20profile&aspect=1:1'
-      },
-      content: newPost,
-      timestamp: new Date(),
-      reactions: {
-        likes: 0,
-        fire: 0
-      },
-      visibility: type
-    };
-    setPosts([newPostObj, ...posts]);
-    setNewPost('');
-    setShowShareModal(false);
-    
-    // Show success message based on share type
-    const message = type === 'all' ? 'Posted to everyone' : 
-                   type === 'friends' ? 'Posted to friends only' :
-                   'Posted to group';
-    toast.success(message);
+    // Use the existing Firebase function
+    handleCreatePost();
   };
 
   const renderTabContent = () => {
@@ -160,11 +255,17 @@ export default function SocialFeedScreen({ navigation, route }) {
                   </View>
                   <Text style={styles.postText}>{post.content}</Text>
                   <View style={styles.reactions}>
-                    <TouchableOpacity style={styles.reactionButton}>
+                    <TouchableOpacity 
+                      style={styles.reactionButton}
+                      onPress={() => handleLikePost(post.id)}
+                    >
                       <Ionicons name="heart-outline" size={24} color="#FF9500" />
                       <Text style={styles.reactionCount}>{post.reactions.likes}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.reactionButton}>
+                    <TouchableOpacity 
+                      style={styles.reactionButton}
+                      onPress={() => handleFirePost(post.id)}
+                    >
                       <MaterialCommunityIcons name="fire" size={24} color="#FF9500" />
                       <Text style={styles.reactionCount}>{post.reactions.fire}</Text>
                     </TouchableOpacity>

@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { toast } from 'sonner-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
 import HamburgerMenuButton from './HamburgerMenuButton';
+
+// Firestore imports
+import { db, auth } from '../config/firebase';
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  deleteDoc, 
+  doc,
+  updateDoc,
+  onSnapshot 
+} from 'firebase/firestore';
+
+// Workout assets
+import { WORKOUT_TYPES, getWorkoutAsset } from '../config/workoutAssets';
 
 type RootStackParamList = {
   Calendar: undefined;
@@ -18,52 +35,29 @@ interface CalendarScreenProps {
   navigation: CalendarScreenNavigationProp;
 }
 
-const mockCompletedWorkouts = [
-  {
-    id: 1,
-    title: "Full Body Strength",
-    date: "2025-01-15",
-    weights: "Bench Press: 135lbs, Squats: 185lbs, Deadlift: 225lbs"
-  },
-  {
-    id: 2,
-    title: "Upper Body Focus",
-    date: "2025-02-01",
-    weights: "Shoulder Press: 95lbs, Rows: 135lbs, Pull-ups: BW+25lbs"
-  },
-  {
-    id: 3,
-    title: "Leg Day",
-    date: "2025-02-03",
-    weights: "Front Squat: 155lbs, RDL: 185lbs, Lunges: 35lbs DBs"
-  }
-];
-
-const mockScheduledWorkouts = [
-  {
-    id: 1,
-    title: "HIIT Cardio",
-    date: "2025-02-05",
-    time: "07:00",
-    type: "cardio",
-    duration: "45 min"
-  },
-  {
-    id: 2,
-    title: "Full Body Strength",
-    date: "2025-02-07",
-    time: "18:30",
-    type: "strength",
-    duration: "60 min"
-  }
-];
+interface WorkoutEvent {
+  id: string;
+  title: string;
+  date: string;
+  time?: string;
+  type?: string;
+  duration?: string;
+  weights?: string;
+  status: 'scheduled' | 'completed';
+  userId: string;
+  createdAt: any;
+  completedAt?: any;
+}
 
 export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState('calendar');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredWorkouts, setFilteredWorkouts] = useState(mockCompletedWorkouts);
+  const [scheduledWorkouts, setScheduledWorkouts] = useState<WorkoutEvent[]>([]);
+  const [completedWorkouts, setCompletedWorkouts] = useState<WorkoutEvent[]>([]);
+  const [filteredWorkouts, setFilteredWorkouts] = useState<WorkoutEvent[]>([]);
+  const [loading, setLoading] = useState(false);
   const [newWorkout, setNewWorkout] = useState({
     title: '',
     date: new Date().toISOString().split('T')[0],
@@ -77,12 +71,51 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const workoutTypes = [
-    { id: 'strength', name: 'Strength', icon: 'barbell' },
-    { id: 'cardio', name: 'Cardio', icon: 'bicycle-outline' },
-    { id: 'hiit', name: 'HIIT', icon: 'flash' },
-    { id: 'mobility', name: 'Mobility', icon: 'body-outline' }
-  ];
+  const workoutTypes = WORKOUT_TYPES;
+
+  // Fetch workouts from Firestore
+  useEffect(() => {
+    if (!auth.currentUser?.uid) return;
+
+    const userId = auth.currentUser.uid;
+
+    // Set up real-time listeners for scheduled workouts
+    const scheduledQuery = query(
+      collection(db, 'workoutEvents'),
+      where('userId', '==', userId),
+      where('status', '==', 'scheduled')
+    );
+
+    const scheduledUnsubscribe = onSnapshot(scheduledQuery, (snapshot) => {
+      const workouts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as WorkoutEvent[];
+      setScheduledWorkouts(workouts);
+    });
+
+    // Set up real-time listeners for completed workouts
+    const completedQuery = query(
+      collection(db, 'workoutEvents'),
+      where('userId', '==', userId),
+      where('status', '==', 'completed')
+    );
+
+    const completedUnsubscribe = onSnapshot(completedQuery, (snapshot) => {
+      const workouts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as WorkoutEvent[];
+      setCompletedWorkouts(workouts);
+      setFilteredWorkouts(workouts);
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      scheduledUnsubscribe();
+      completedUnsubscribe();
+    };
+  }, [auth.currentUser]);
 
   const getDaysInMonth = (date: Date): (Date | null)[] => {
     const year = date.getFullYear();
@@ -138,33 +171,65 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
     setFilteredWorkouts(filtered);
   };
 
-  const handleScheduleWorkout = () => {
-    if (!newWorkout.title) {
+  const handleScheduleWorkout = async () => {
+    if (!newWorkout.title || !auth.currentUser?.uid) {
       toast.error('Please enter a workout title');
       return;
     }
 
-    // Here you would typically make an API call to save the workout
-    mockScheduledWorkouts.push({
-      id: Date.now(),
-      ...newWorkout
-    });
+    try {
+      setLoading(true);
+      await addDoc(collection(db, 'workoutEvents'), {
+        ...newWorkout,
+        userId: auth.currentUser.uid,
+        status: 'scheduled',
+        createdAt: new Date()
+      });
 
-    toast.success('Workout scheduled successfully!');
-    setShowScheduleModal(false);
-    setNewWorkout({
-      title: '',
-      date: new Date().toISOString().split('T')[0],
-      time: '09:00',
-      type: 'strength',
-      duration: '60'
-    });
+      toast.success('Workout scheduled successfully!');
+      setShowScheduleModal(false);
+      setNewWorkout({
+        title: '',
+        date: new Date().toISOString().split('T')[0],
+        time: '09:00',
+        type: 'strength',
+        duration: '60'
+      });
+    } catch (error) {
+      console.error('Error scheduling workout:', error);
+      toast.error('Failed to schedule workout');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getWorkoutsForDate = (date: Date | null): any[] => {
+  const handleDeleteWorkout = async (workoutId: string) => {
+    try {
+      await deleteDoc(doc(db, 'workoutEvents', workoutId));
+      toast.success('Workout deleted');
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+      toast.error('Failed to delete workout');
+    }
+  };
+
+  const handleCompleteWorkout = async (workoutId: string) => {
+    try {
+      await updateDoc(doc(db, 'workoutEvents', workoutId), {
+        status: 'completed',
+        completedAt: new Date()
+      });
+      toast.success('Workout marked as completed!');
+    } catch (error) {
+      console.error('Error completing workout:', error);
+      toast.error('Failed to complete workout');
+    }
+  };
+
+  const getWorkoutsForDate = (date: Date | null): WorkoutEvent[] => {
     if (!date) return [];
     const dateStr = date.toISOString().split('T')[0];
-    return mockScheduledWorkouts.filter(workout => workout.date === dateStr);
+    return scheduledWorkouts.filter(workout => workout.date === dateStr);
   };
 
   return (
@@ -316,14 +381,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
                     <View style={styles.summaryWorkoutHeader}>
                       <Text style={styles.summaryWorkoutTitle}>{workout.title}</Text>
                       <TouchableOpacity 
-                        onPress={() => {
-                          // Handle delete workout
-                          toast.success('Workout deleted');
-                          const index = mockScheduledWorkouts.findIndex(w => w.id === workout.id);
-                          if (index !== -1) {
-                            mockScheduledWorkouts.splice(index, 1);
-                          }
-                        }}
+                        onPress={() => handleDeleteWorkout(workout.id)}
                       >
                         <Ionicons name="trash-outline" size={20} color="#FF3B30" />
                       </TouchableOpacity>
@@ -409,10 +467,13 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
                         ]}
                         onPress={() => setNewWorkout({...newWorkout, type: type.id})}
                       >
-                        <Ionicons 
-                          name={type.icon} 
-                          size={24} 
-                          color={newWorkout.type === type.id ? '#FF9500' : '#8e8e8e'} 
+                        <Image 
+                          source={type.asset} 
+                          style={[
+                            styles.workoutTypeIcon,
+                            { tintColor: newWorkout.type === type.id ? '#FF9500' : '#8e8e8e' }
+                          ]}
+                          resizeMode="contain"
                         />
                         <Text style={[
                           styles.typeButtonText,
@@ -461,10 +522,13 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
               </ScrollView>
 
               <TouchableOpacity
-                style={styles.scheduleButton}
+                style={[styles.scheduleButton, loading && styles.disabledButton]}
                 onPress={handleScheduleWorkout}
+                disabled={loading}
               >
-                <Text style={styles.scheduleButtonText}>Schedule Workout</Text>
+                <Text style={styles.scheduleButtonText}>
+                  {loading ? 'Scheduling...' : 'Schedule Workout'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -749,6 +813,10 @@ const styles = StyleSheet.create({
   activeTypeButtonText: {
     color: '#FF9500',
   },
+  workoutTypeIcon: {
+    width: 24,
+    height: 24,
+  },
   scheduleButton: {
     backgroundColor: '#FF9500',
     margin: 16,
@@ -760,5 +828,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  disabledButton: {
+    backgroundColor: '#8e8e8e',
+    opacity: 0.6,
   },
 });

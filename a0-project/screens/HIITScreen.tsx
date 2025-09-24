@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import HamburgerMenuButton from './HamburgerMenuButton';
+import { getWorkoutAsset } from '../config/workoutAssets';
 
 // Mock HIIT workouts data
 const mockWorkouts = [
@@ -16,7 +17,7 @@ const mockWorkouts = [
     intensity: 7,
     equipment: "Bodyweight",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=bodyweight%20hiit&aspect=16:9&seed=123"
+    image: getWorkoutAsset('hiit')
   },
   {
     id: 2,
@@ -27,7 +28,7 @@ const mockWorkouts = [
     intensity: 8,
     equipment: "Dumbbells",
     muscleGroup: "upper",
-    image: "https://api.a0.dev/assets/image?text=dumbbell%20hiit&aspect=16:9&seed=456"
+    image: getWorkoutAsset('hiit')
   },
   {
     id: 3,
@@ -38,7 +39,7 @@ const mockWorkouts = [
     intensity: 6,
     equipment: "Resistance Bands",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=resistance%20band%20hiit&aspect=16:9&seed=789"
+    image: getWorkoutAsset('hiit')
   },
   {
     id: 4,
@@ -49,7 +50,7 @@ const mockWorkouts = [
     intensity: 9,
     equipment: "Cable Machine",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=cable%20hiit&aspect=16:9&seed=101"
+    image: getWorkoutAsset('hiit')
   },
   {
     id: 5,
@@ -60,7 +61,7 @@ const mockWorkouts = [
     intensity: 9,
     equipment: "Full Gym",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=gym%20hiit&aspect=16:9&seed=102"
+    image: "getWorkoutAsset('hiit')?text=gym%20hiit&aspect=16:9&seed=102"
   },
   {
     id: 6,
@@ -71,7 +72,7 @@ const mockWorkouts = [
     intensity: 8,
     equipment: "Kettlebell",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=kettlebell%20hiit&aspect=16:9&seed=103"
+    image: "getWorkoutAsset('hiit')?text=kettlebell%20hiit&aspect=16:9&seed=103"
   },
   {
     id: 7,
@@ -82,7 +83,7 @@ const mockWorkouts = [
     intensity: 7,
     equipment: "Bodyweight",
     muscleGroup: "lower",
-    image: "https://api.a0.dev/assets/image?text=bodyweight%20lower%20hiit&aspect=16:9&seed=104"
+    image: "getWorkoutAsset('hiit')?text=bodyweight%20lower%20hiit&aspect=16:9&seed=104"
   },
   {
     id: 8,
@@ -93,7 +94,7 @@ const mockWorkouts = [
     intensity: 8,
     equipment: "Dumbbells",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=dumbbell%20full%20hiit&aspect=16:9&seed=105"
+    image: "getWorkoutAsset('hiit')?text=dumbbell%20full%20hiit&aspect=16:9&seed=105"
   },
   {
     id: 9,
@@ -104,7 +105,7 @@ const mockWorkouts = [
     intensity: 7,
     equipment: "Resistance Bands",
     muscleGroup: "upper",
-    image: "https://api.a0.dev/assets/image?text=band%20upper%20hiit&aspect=16:9&seed=106"
+    image: "getWorkoutAsset('hiit')?text=band%20upper%20hiit&aspect=16:9&seed=106"
   },
   {
     id: 10,
@@ -115,7 +116,7 @@ const mockWorkouts = [
     intensity: 9,
     equipment: "Cable Machine",
     muscleGroup: "upper",
-    image: "https://api.a0.dev/assets/image?text=cable%20upper%20hiit&aspect=16:9&seed=107"
+    image: "getWorkoutAsset('hiit')?text=cable%20upper%20hiit&aspect=16:9&seed=107"
   },
   {
     id: 11,
@@ -126,7 +127,7 @@ const mockWorkouts = [
     intensity: 10,
     equipment: "Full Gym",
     muscleGroup: "full",
-    image: "https://api.a0.dev/assets/image?text=full%20gym%20hiit&aspect=16:9&seed=108"
+    image: "getWorkoutAsset('hiit')?text=full%20gym%20hiit&aspect=16:9&seed=108"
   },
   {
     id: 12,
@@ -137,7 +138,7 @@ const mockWorkouts = [
     intensity: 8,
     equipment: "Kettlebell",
     muscleGroup: "lower",
-    image: "https://api.a0.dev/assets/image?text=kettlebell%20lower%20hiit&aspect=16:9&seed=109"
+    image: "getWorkoutAsset('hiit')?text=kettlebell%20lower%20hiit&aspect=16:9&seed=109"
   }
 ];
 
