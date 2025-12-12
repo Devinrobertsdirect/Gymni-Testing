@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Gymni Fitness",
-    "slug": "gymni-fitness",
+    "slug": "gymnifitnessapp-gymnifitness-0998c33744a3",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,16 +12,41 @@
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/**/*"
+    ],
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": []
+        }
+      ],
+      "expo-updates"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3",
-      "buildNumber": "5",
+            "bundleIdentifier": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3",
+      "buildNumber": "9",
+      "requireFullScreen": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "This app uses the camera to take photos for your fitness journey.",
-        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to share fitness content."
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to share fitness content.",
+        "UIDeviceFamily": [
+          1,
+          2,
+          1,
+          2
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "gymni-testing-1-devinrobertsdir.replit.app": {
+              "NSExceptionAllowsInsecureHTTPLoads": false,
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },
@@ -30,8 +55,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.devinrobertsdirect.gymnifitnessapp",
+              "package": "com.devinrobertsdirect.gymnifitnessappgymnifitness0998c33744a3",
+      "versionCode": 9,
       "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"
@@ -45,6 +74,13 @@
       "eas": {
         "projectId": "f0a3a699-40d0-4ec3-9419-ebf24ad31493"
       }
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/f0a3a699-40d0-4ec3-9419-ebf24ad31493"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -35,6 +36,9 @@ import VideoModeScreen from './screens/VideoModeScreen';
 import ExerciseDemosScreen from './screens/ExerciseDemosScreen';
 import SocialFeedScreen from './screens/SocialFeedScreen';
 import GroupDetailScreen from './screens/GroupDetailScreen';
+import SearchScreen from './screens/SearchScreen';
+import PostDetailScreen from './screens/PostDetailScreen';
+import SportsScreen from './screens/SportsScreen';
 
 export type RootStackParamList = {  
   ChangePassword: undefined;

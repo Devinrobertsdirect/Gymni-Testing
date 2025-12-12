@@ -139,15 +139,15 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
     if (!date) return false;
     const dateStr = date.toISOString().split('T')[0];
     return (
-      mockCompletedWorkouts.some(workout => workout.date === dateStr) ||
-      mockScheduledWorkouts.some(workout => workout.date === dateStr)
+      completedWorkouts.some(workout => workout.date === dateStr) ||
+      scheduledWorkouts.some(workout => workout.date === dateStr)
     );
   };
 
   const isScheduledWorkout = (date: Date | null): boolean => {
     if (!date) return false;
     const dateStr = date.toISOString().split('T')[0];
-    return mockScheduledWorkouts.some(workout => workout.date === dateStr);
+    return scheduledWorkouts.some(workout => workout.date === dateStr);
   };
 
   const isToday = (date: Date | null): boolean => {
@@ -162,7 +162,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    const filtered = mockCompletedWorkouts.filter(workout => {
+    const filtered = completedWorkouts.filter(workout => {
       const workoutDate = new Date(workout.date);
       const monthName = monthNames[workoutDate.getMonth()].toLowerCase();
       return workout.title.toLowerCase().includes(text.toLowerCase()) || 

@@ -14,7 +14,7 @@ export default function CreateAccountScreen({ navigation }) {
 
   const handleSocialSignup = (provider: 'google' | 'apple') => {
     // Here you would implement the actual social sign up logic
-    console.log(`Signing up with ${provider}`);
+    // Social sign up integration
   };
 
   const handleEmailSignup = () => {
